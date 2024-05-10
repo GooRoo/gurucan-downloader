@@ -5,7 +5,9 @@ SPDX-License-Identifier: CC0-1.0
 
 # Gurucan Downloader
 
-> [!warn] Disclaimer
+> [!warning]
+> 
+> **Disclaimer**
 >
 > Use this code at your own risk. It is very probable that you are violating some user agreement or something.
 >
