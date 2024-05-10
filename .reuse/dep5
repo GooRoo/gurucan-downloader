@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: gurucan-downloader
+Upstream-Contact: GooRoo <sergey.olendarenko@gmail.com>
+Source: https://github.com/GooRoo/gurucan-downloader
+
+# Sample paragraph, commented out:
+#
+# Files: src/*
+# Copyright: $YEAR $NAME <$CONTACT>
+# License: ...
