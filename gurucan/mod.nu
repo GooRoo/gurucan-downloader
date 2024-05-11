@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: © 2024 Serhii Olendarenko
 # SPDX-License-Identifier: MIT
 
+use std log
+
 use api.nu
 use cdn.nu
 
@@ -9,7 +11,7 @@ def "markdownify richtext" [blocks: list<record>]: nothing -> string {
 		let text = match $b.type {
 			unstyled => $b.text
 			_ => {
-				print $"Unknown type of richtext block: ($b.type)"
+				log warning $"Unknown type of richtext block: ($b.type)"
 				$b.text
 			}
 		}
@@ -22,6 +24,8 @@ def "markdownify resources" [
 	cell_path?: cell-path
 	--hash-name
 ]: nothing -> string {
+	log info $"\t($data | length) files"
+
 	$data | reduce --fold '' {|it, acc|
 		mkdir assets
 		cd assets
@@ -41,6 +45,8 @@ def "markdownify resources" [
 			$new_name
 		} else { $resource }
 
+		log info "\t\tDone."
+
 		[$acc $"![[assets/($final_name)]]"] | str join "\n"
 	}
 }
@@ -50,6 +56,8 @@ def "markdownify video" [
 	thumbnail?: string
 	--hash-name
 ]: nothing -> string {
+	log info "\t1 video"
+
 	let playlist = $qualities
 		| where res != 'default'
 		| sort-by --natural --reverse res
@@ -67,6 +75,8 @@ def "markdownify video" [
 		$new_name
 	} else { $resource }
 
+	log info "\t\tDone."
+
 	$"![[assets/($final_name)]]"
 }
 
@@ -74,7 +84,7 @@ def "download exercise" [exercise: record] {
 	let chapter = $exercise.chapter?
 	let output_dir = if $chapter != null { $chapter.title } else { '.' }
 
-	print $'Downloading "($exercise.title)" to "($output_dir)"'
+	log info $'Downloading "($exercise.title)" to "($output_dir)"'
 
 	mkdir $output_dir
 	cd $output_dir
@@ -88,7 +98,7 @@ def "download exercise" [exercise: record] {
 			download => { markdownify resources $b.data ([src] | into cell-path) },
 			video => { markdownify video --hash-name $b.qualities $b.meta_data.thumbnail? },
 			_ => {
-				print $"Unsupported block type: ($b.type). Skipping."
+				log warning $"Unsupported block type: ($b.type). Skipping."
 				''
 			}
 		}

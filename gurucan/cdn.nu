@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: © 2024 Serhii Olendarenko
 # SPDX-License-Identifier: MIT
 
+use std log
+
 export def "download file" [
 	url: string
 	name?: string
@@ -70,7 +72,9 @@ def "video combine" [
 		| save --force inputs.txt
 
 	let output = $"($output_name).mp4"
-	ffmpeg -f concat -hwaccel videotoolbox -safe 0 -i inputs.txt -c copy $output
+	ffmpeg -f concat -hwaccel videotoolbox -safe 0 -i inputs.txt -c copy $output | complete | if $in.exit_code != 0 {
+		log error $"Can't combine ($output)"
+	}
 
 	$output
 }
@@ -90,7 +94,9 @@ def "video attach-cover" [
 			-c copy -c:v:1 mjpeg
 			-disposition:v:1 attached_pic
 			$output
-		)
+		) | complete | if $in.exit_code != 0 {
+			log error $"Can't attach cover to ($output)"
+		}
 	} else if $in != $output {
 		mv $in $output
 	}
